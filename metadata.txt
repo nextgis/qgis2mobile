@@ -1,0 +1,20 @@
+[general]
+name=QGIS to Mobile
+description=Import vector layer to USB device. Automating procedure of save vector layer to the mobile device for later use in QGISMobile application. Windows only!
+category=file, import
+version=0.0.1
+qgisMinimumVersion=2.6
+
+author=NextGIS
+email=info@nextgis.org
+
+icon=icons/qgis2mobile.png
+
+tags=
+
+homepage=
+tracker=
+repository=https://github.com/nextgis
+
+experimental=True
+deprecated=False
