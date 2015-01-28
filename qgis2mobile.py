@@ -76,7 +76,13 @@ class SettingsDialog(QDialog, SETTINGS_DIALOG):
     def accept(self):
         settings = QSettings();
         
-        settings.setValue("qgis2mobile/device_id", self.usbDeviceID)
+        print "self.cbDevices.count(): ", self.cbDevices.count()
+        if self.usbDeviceID == -1 and self.cbDevices.count() > 0:
+            print "self.cbDevices.currentIndex(): ", self.cbDevices.currentIndex()
+            print "self.cbDevices.itemData(self.cbDevices.currentIndex()): ", self.cbDevices.itemData(self.cbDevices.currentIndex())
+            settings.setValue("qgis2mobile/device_id", self.cbDevices.itemData(self.cbDevices.currentIndex()))
+        else:
+            settings.setValue("qgis2mobile/device_id", self.usbDeviceID)
         
         self.importDirectory = self.lePathToImport.text()
         settings.setValue("qgis2mobile/import_dir", self.importDirectory)
@@ -135,9 +141,16 @@ class SettingsDialog(QDialog, SETTINGS_DIALOG):
             
             self.cbDevices.insertItem(cb_insert_index, volume_description, drive[1])
         
-        if not drive_with_id_found:
+        if not drive_with_id_found and self.usbDeviceID != -1:
             self.cbDevices.insertItem(0, "Current volume serial number is %d (not found now)"%self.usbDeviceID, self.usbDeviceID)
         self.cbDevices.setCurrentIndex(0)
+        
+        if self.cbDevices.count() == 0 and self.usbDeviceID == -1:
+            le = QLineEdit()
+            le.setPlaceholderText(self.tr("Connect usb device"))
+            le.setReadOnly(True)
+            self.cbDevices.setLineEdit(le)
+            self.cbDevices.setCurrentIndex(-1)
         
 class DeviceListener(QThread):
     deviceConnected = pyqtSignal()
@@ -319,7 +332,7 @@ class Plugin():
     if currentLayer.crs().authid() not in possibleSpatialRefs:
         QgsMessageLog.logMessage( "Import ERROR: Layer spatial reference have to be one of %s"%str(possibleSpatialRefs), u'qgis2mobile', QgsMessageLog.CRITICAL)
         self.iface.messageBar().pushMessage(QCoreApplication.translate("Plugin", 'qgis2mobile'),
-                                            QCoreApplication.translate("Plugin", 'Layer spatial reference have to be one of %s'%str(possibleSpatialRefs)),
+                                            QCoreApplication.translate("Plugin", 'Layer spatial reference have to be one of ') + " " + str(possibleSpatialRefs),
                                             level=QgsMessageBar.CRITICAL)
         return
     
@@ -329,11 +342,11 @@ class Plugin():
             if not os.path.exists(os.path.join(drive[5], importDirectory)):
                 QgsMessageLog.logMessage( "Import ERROR: directory %s for import not found"%os.path.join(drive[5], importDirectory), u'qgis2mobile', QgsMessageLog.CRITICAL)
                 self.iface.messageBar().pushMessage(QCoreApplication.translate("Plugin", 'qgis2mobile'),
-                                                    QCoreApplication.translate("Plugin", "Directory %s for import not found"%os.path.join(drive[5], importDirectory)),
+                                                    QCoreApplication.translate("Plugin", "Directory for import not found: ") + " " + os.path.join(drive[5], importDirectory),
                                                     level=QgsMessageBar.CRITICAL)
                 return
             
-            import_filename = os.path.join(drive[5], importDirectory, "%s.json"%currentLayer.name())
+            import_filename = os.path.join(drive[5], importDirectory, currentLayer.name() )
             QgsMessageLog.logMessage( "\t save as: %s"%import_filename, u'qgis2mobile', QgsMessageLog.INFO)
             
             error = QgsVectorFileWriter.writeAsVectorFormat(currentLayer, import_filename, "utf-8", None, "GeoJSON")
