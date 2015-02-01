@@ -56,12 +56,12 @@
     <message>
         <location filename="qgis2mobile.py" line="360"/>
         <source>The import was successful!</source>
-        <translation>Ипорт данных прошел успешно!</translation>
+        <translation>Импорт данных прошел успешно!</translation>
     </message>
     <message>
         <location filename="qgis2mobile.py" line="263"/>
-        <source>Linux not support</source>
-        <translation>Linux не поддерживается</translation>
+        <source>Linux is not supported yet</source>
+        <translation>Linux пока не поддерживается</translation>
     </message>
     <message>
         <location filename="qgis2mobile.py" line="334"/>
@@ -112,7 +112,7 @@
     <message>
         <location filename="qgis2mobile_settings.ui" line="42"/>
         <source>Import to:</source>
-        <translation>Ипортировать в:</translation>
+        <translation>Импортировать в:</translation>
     </message>
     <message>
         <location filename="qgis2mobile_settings.ui" line="55"/>
